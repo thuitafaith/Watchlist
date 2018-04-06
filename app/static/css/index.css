@@ -1,0 +1,12 @@
+.movie-card a {
+ color: green;
+}
+
+.movie-card a:hover {
+ padding-bottom: 20px;
+ border-bottom: 1px solid green;
+}
+
+h3 {
+ text-align: center;
+}
