@@ -1,9 +1,9 @@
 from flask import render_template,redirect,url_for
 from . import auth
 from ..models import User
-from .forms import RegistrationForm
+from .forms import RegistrationForm,LoginForm
 from .. import db
-
+from flask import flash
 @auth.route('/login',methods = ['GET','POST'])
 def login():
     login_form = LoginForm()
@@ -25,3 +25,8 @@ def register():
         return redirect(url_for('auth.login'))
         title = "New Account"
     return render_template('auth/register.html',registration_form = form)
+@auth.route('/logout')
+
+def logout():
+    logout_user()
+    return redirect(url_for("main.index"))
