@@ -1,9 +1,10 @@
 from flask import render_template,request,redirect,url_for,abort
 from ..request import get_movies,get_movie,search_movie
-from ..models import Review
+from ..models import Review,User
 from .forms import ReviewForm,UpdateProfile
 from .import main
 from flask_login import login_required
+from .. import db,photos
 #views
 @main.route('/')
 def index():
@@ -60,6 +61,7 @@ def new_review(id):
 
     title = f'{movie.title} review'
     return render_template('new_review.html',title = title, review_form=form,movie=movie)
+
 @main.route('/user/<uname>')
 @login_required
 def profile(uname):
@@ -71,7 +73,8 @@ def profile(uname):
     return render_template("profile/profile.html", user = user)
 
 
-@main.route('/user/<uname>/update',methods = ['GET','POST'])
+@main.route('/user/<uname>/update/',methods = ['GET','POST'])
+@login_required
 def update_profile(uname):
     user = User.query.filter_by(username = uname).first()
     if user is None:
@@ -87,4 +90,15 @@ def update_profile(uname):
 
         return redirect(url_for('.profile',uname=user.username))
 
-    return render_template('profile/update.html',form =form)
+    return render_template('profile/update.html',form=form)
+
+@main.route('/user/<uname>/update/pic',methods = ['POST'])
+@login_required
+def update_pic(uname):
+    user = User.query.filter_by(username = uname).first()
+    if 'photo' in request.files:
+        filename = photos.save(request.files['photo'])
+        path = f'photos/{filename}'
+        user.profile_pic_path = path
+        db.session.commit()
+    return redirect(url_for('main.profile',uname = uname))
